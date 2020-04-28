@@ -106,6 +106,15 @@ beautiful.hotkeys_border_color = '#ff0000'
 beautiful.hotkeys_border_width = theme.bg_width
 
 local gnome_icon = wibox.widget.imagebox(theme.gnome_icon)
+local gnome_button = awful.widget.button {
+  image = theme.gnome_icon
+}
+gnome_button:buttons(gears.table.join(
+  gnome_button:buttons(),
+  awful.button({}, 1, nil, function()
+    awful.util.mymainmenu:show()
+  end)
+))
 
 -- Textclock
 local clockicon = wibox.widget.imagebox(theme.widget_clock)
@@ -417,7 +426,8 @@ function theme.at_screen_connect(s)
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
             spr,
-            gnome_icon,
+            --gnome_icon,
+            gnome_button,
             s.mytaglist,
             arrl_rd,
             s.mypromptbox,
