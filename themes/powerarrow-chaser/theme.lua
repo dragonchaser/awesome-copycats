@@ -71,6 +71,7 @@ theme.widget_vol_no                             = theme.dir .. "/icons/vol_no.pn
 theme.widget_vol_mute                           = theme.dir .. "/icons/vol_mute.png"
 theme.widget_mail                               = theme.dir .. "/icons/mail.png"
 theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.png"
+theme.gnome_icon                                = theme.dir .. "/icons/gnome.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = dpi(4)
@@ -103,6 +104,8 @@ end
 
 beautiful.hotkeys_border_color = '#ff0000'
 beautiful.hotkeys_border_width = theme.bg_width
+
+local gnome_icon = wibox.widget.imagebox(theme.gnome_icon)
 
 -- Textclock
 local clockicon = wibox.widget.imagebox(theme.widget_clock)
@@ -414,9 +417,7 @@ function theme.at_screen_connect(s)
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
             spr,
-            spr,
-            spr,
-            spr,
+            gnome_icon,
             s.mytaglist,
             arrl_rd,
             s.mypromptbox,
