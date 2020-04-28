@@ -426,8 +426,9 @@ function theme.at_screen_connect(s)
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
             spr,
-            --gnome_icon,
             gnome_button,
+            arrl_rd,
+            arrl_dr,
             s.mytaglist,
             arrl_rd,
             s.mypromptbox,
