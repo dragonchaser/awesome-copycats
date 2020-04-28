@@ -37,6 +37,7 @@ theme.tasklist_bg_focus                         = "#1A1A1A"
 theme.titlebar_bg_focus                         = theme.bg_focus
 theme.titlebar_bg_normal                        = theme.bg_normal
 theme.titlebar_fg_focus                         = theme.fg_focus
+theme.bg_systray                                = theme.bg_focus
 theme.menu_height                               = dpi(16)
 theme.menu_width                                = dpi(140)
 theme.menu_submenu_icon                         = theme.dir .. "/icons/submenu.png"
@@ -317,7 +318,7 @@ function theme.at_screen_connect(s)
     awful.tag(awful.util.tagnames, s, awful.layout.layouts)
 
     -- Create a promptbox for each screen
-    s.mypromptbox = awful.widget.prompt{bg = theme.bg_focus }
+    s.mypromptbox = awful.widget.prompt{bg = theme.bg_normal }
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     s.mylayoutbox = awful.widget.layoutbox(s)
@@ -335,15 +336,15 @@ function theme.at_screen_connect(s)
         style   = {
             shape = gears.shape.powerline
         },
-        layout   = {
-            --spacing = -12,
+        --[[layout   = {
+            spacing = -10,
             spacing_widget = {
-                color  = '#ff0000',
+                color  = theme.bg_focus,
                 shape  = gears.shape.powerline,
                 widget = wibox.widget.separator,
             },
             layout  = wibox.layout.fixed.horizontal
-        },
+        },]]
         widget_template = {
             {
                 {
@@ -427,18 +428,19 @@ function theme.at_screen_connect(s)
             layout = wibox.layout.fixed.horizontal,
             spr,
             gnome_button,
-            arrl_rd,
-            arrl_dr,
             s.mytaglist,
             arrl_rd,
-            s.mypromptbox,
+            wibox.container.background(spr, theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
+            wibox.container.background(wibox.widget.systray(), theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
             arrl_dr,
             spr,
         },
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
+            s.mypromptbox,
             spr,
             --wibox.container.background(mpdicon, theme.bg_focus),
             --wibox.container.background(theme.mpd.widget, theme.bg_focus),
