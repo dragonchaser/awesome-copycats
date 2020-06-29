@@ -15,6 +15,9 @@ local dpi   = require("beautiful.xresources").apply_dpi
 local os = os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
+local pulse = require("pulseaudio_widget")
+pulse.notification_timeout_seconds = 5
+
 local theme                                     = {}
 theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-chaser"
 theme.wallpaper                                 = theme.dir .. "/wall.png"
@@ -271,6 +274,18 @@ theme.volume = lain.widget.alsa({
         widget:set_markup(markup.font(theme.font, " " .. volume_now.level .. "% "))
     end
 })
+--[[
+theme.volume.widget:buttons(awful.util.table.join(
+                               awful.button({}, 4, function ()
+                                     awful.util.spawn("amixer set Master 1%+")
+                                     theme.volume.update()
+                               end),
+                               awful.button({}, 5, function ()
+                                     awful.util.spawn("amixer set Master 1%-")
+                                     theme.volume.update()
+                               end)
+))
+]]--
 theme.volume.widget:buttons(awful.util.table.join(
                                awful.button({}, 4, function ()
                                      awful.util.spawn("amixer set Master 1%+")
@@ -445,8 +460,9 @@ function theme.at_screen_connect(s)
             --wibox.container.background(mpdicon, theme.bg_focus),
             --wibox.container.background(theme.mpd.widget, theme.bg_focus),
             arrl_ld,
-            wibox.container.background(volicon, theme.bg_focus),
-            wibox.container.background(theme.volume.widget, theme.bg_focus),
+            --wibox.container.background(volicon, theme.bg_focus),
+            --wibox.container.background(theme.volume.widget, theme.bg_focus),
+            wibox.container.background(pulse, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             --wibox.container.background(mailicon, theme.bg_focus),
             --wibox.container.background(theme.mail.widget, theme.bg_focus),
@@ -480,5 +496,16 @@ function theme.at_screen_connect(s)
         },
     }
 end
+
+awful.util.table.join(
+  -- Audio
+  awful.key({ }, "XF86AudioRaiseVolume", pulse.volume_up),
+  awful.key({ }, "XF86AudioLowerVolume", pulse.volume_down),
+  awful.key({ }, "XF86AudioMute",  pulse.toggle_muted),
+  -- Microphone
+  awful.key({"Shift"}, "XF86AudioRaiseVolume", pulse.volume_up_mic),
+  awful.key({"Shift"}, "XF86AudioLowerVolume", pulse.volume_down_mic),
+  awful.key({ }, "XF86MicMute",  pulse.toggle_muted_mic)
+)
 
 return theme
