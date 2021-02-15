@@ -77,6 +77,7 @@ theme.widget_mail                               = theme.dir .. "/icons/mail.png"
 theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.png"
 theme.widget_net_wired                          = theme.dir .. "/icons/net_wired.png"
 theme.gnome_icon                                = theme.dir .. "/icons/gnome.png"
+theme.widget_keyboard                           = theme.dir .. "/icons/task.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = dpi(4)
@@ -102,6 +103,9 @@ theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/
 
 local markup = lain.util.markup
 local separators = lain.util.separators
+
+local keyboardlayout = awful.widget.keyboardlayout:new()
+local keyboardIcon = wibox.widget.imagebox(theme.widget_keyboard)
 
 beautiful.hotkeys_shape = function(cr,w,h)
         gears.shape.rounded_rect(cr, w, h, theme.corner_radius)
@@ -297,6 +301,7 @@ local net = lain.widget.net({
                           markup("#46A8C3", " " .. string.format("%06.1f", net_now.sent) .. " ")))
     end
 })
+
 -- vpn
 local vpnicon = wibox.widget.imagebox(theme.widget_net_wired)
 local vpn = awful.widget.watch(
@@ -540,11 +545,15 @@ function theme.at_screen_connect(s)
             wibox.container.background(spr, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             arrl_dl,
-            wibox.container.background(clock, theme.bg_normal),
-            wibox.container.background(spr, theme.bg_normal),
+            wibox.container.background(keyboardIcon, theme.bg_normal),
+            wibox.container.background(keyboardlayout, theme.bg_normal),
             wibox.container.background(spr, theme.bg_normal),
             arrl_ld,
-            wibox.container.background(s.mylayoutbox, theme.bg_focus),
+            wibox.container.background(clock, theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
+            arrl_dl,
+            wibox.container.background(s.mylayoutbox, theme.bg_normal),
         },
     }
 end
