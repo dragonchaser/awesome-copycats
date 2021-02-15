@@ -447,8 +447,8 @@ function theme.at_screen_connect(s)
         opacity = 0.7,
         shape = function(cr, w, h)
             gears.shape.rounded_rect(cr, w, h, theme.corner_radius)
-        end}
-    )
+        end,
+    })
     pomowibox.visible = false
     local screen = screen
     pomodoro = awmodoro.new({
@@ -477,6 +477,7 @@ function theme.at_screen_connect(s)
     		--for screens = 1, screen.count() do
     		--	screens.mywibox.visible = true
     		--end
+            awful.util.spawn("aplay ~/.emacs.d/elpa/27.1/develop/org-pomodoro-20190530.1445/resources/bell.wav")
             for s in screen do
                 s.mywibox.visible = not s.mywibox.visible
                 if s.mybottomwibox then
