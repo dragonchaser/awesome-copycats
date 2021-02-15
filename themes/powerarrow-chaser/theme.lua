@@ -15,12 +15,12 @@ local dpi   = require("beautiful.xresources").apply_dpi
 local os = os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
-local pulse = require("pulseaudio_widget")
-pulse.notification_timeout_seconds = 5
+--local pulse = require("pulseaudio_widget")
+--pulse.notification_timeout_seconds = 5
 
 local theme                                     = {}
 theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-chaser"
-theme.wallpaper                                 = theme.dir .. "/wall.png"
+theme.wallpaper                                 = theme.dir .. "/wall_yggdrasil.png"
 theme.font                                      = "Terminus 8"
 theme.fg_normal                                 = "#DDDDFF"
 theme.fg_focus                                  = "#EA6F81"
@@ -30,7 +30,7 @@ theme.bg_normal                                 = "#1A1A1A"
 theme.bg_focus                                  = "#313131"
 theme.bg_urgent                                 = "#1A1A1A"
 theme.border_width                              = dpi(2)
-theme.corner_radius                             = 10
+theme.corner_radius                             = dpi(5)
 --theme.border_normal                             = "#3F3F3F"
 --theme.border_focus                              = "#7F7F7F"
 theme.border_normal                             = "#252525"
@@ -75,6 +75,7 @@ theme.widget_vol_no                             = theme.dir .. "/icons/vol_no.pn
 theme.widget_vol_mute                           = theme.dir .. "/icons/vol_mute.png"
 theme.widget_mail                               = theme.dir .. "/icons/mail.png"
 theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.png"
+theme.widget_net_wired                          = theme.dir .. "/icons/net_wired.png"
 theme.gnome_icon                                = theme.dir .. "/icons/gnome.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
@@ -102,7 +103,7 @@ theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/
 local markup = lain.util.markup
 local separators = lain.util.separators
 
-beautiful.hotkeys_shape = function(cr,w,h) 
+beautiful.hotkeys_shape = function(cr,w,h)
         gears.shape.rounded_rect(cr, w, h, theme.corner_radius)
 end
 
@@ -274,18 +275,6 @@ theme.volume = lain.widget.alsa({
         widget:set_markup(markup.font(theme.font, " " .. volume_now.level .. "% "))
     end
 })
---[[
-theme.volume.widget:buttons(awful.util.table.join(
-                               awful.button({}, 4, function ()
-                                     awful.util.spawn("amixer set Master 1%+")
-                                     theme.volume.update()
-                               end),
-                               awful.button({}, 5, function ()
-                                     awful.util.spawn("amixer set Master 1%-")
-                                     theme.volume.update()
-                               end)
-))
-]]--
 theme.volume.widget:buttons(awful.util.table.join(
                                awful.button({}, 4, function ()
                                      awful.util.spawn("amixer set Master 1%+")
@@ -300,7 +289,7 @@ theme.volume.widget:buttons(awful.util.table.join(
 -- Net
 local neticon = wibox.widget.imagebox(theme.widget_net)
 local net = lain.widget.net({
-    iface = "wlp2s0",
+    iface = "enp0s31f6",
     settings = function()
         widget:set_markup(markup.font(theme.font,
                           markup("#7AC82E", " " .. string.format("%06.1f", net_now.received))
@@ -308,6 +297,14 @@ local net = lain.widget.net({
                           markup("#46A8C3", " " .. string.format("%06.1f", net_now.sent) .. " ")))
     end
 })
+-- vpn
+local vpnicon = wibox.widget.imagebox(theme.widget_net_wired)
+local vpn = awful.widget.watch(
+    "/home/chaser/bin/vpn_detect.sh", 5,
+    function(widget, stdout)
+        widget:set_markup(" " .. markup.font(theme.font, stdout))
+    end
+)
 
 -- Separators
 local spr     = wibox.widget.textbox(' ')
@@ -421,16 +418,16 @@ function theme.at_screen_connect(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ 
-      position = "top", 
-      screen = s, 
-      height = dpi(20), 
-      --height = dpi(18), 
-      --bg = theme.bg_normal, 
-      fg = theme.fg_normal, 
+    s.mywibox = awful.wibar({
+      position = "top",
+      screen = s,
+      height = dpi(20),
+      height = dpi(18),
+      bg = theme.bg_normal,
+      fg = theme.fg_normal,
       --border_width = theme.border_width,
       --border_color = theme.border_focus,
-      opacity = 1.0,
+      --opacity = 0.8,
       shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, theme.corner_radius)
       end,
@@ -460,9 +457,9 @@ function theme.at_screen_connect(s)
             --wibox.container.background(mpdicon, theme.bg_focus),
             --wibox.container.background(theme.mpd.widget, theme.bg_focus),
             arrl_ld,
-            --wibox.container.background(volicon, theme.bg_focus),
-            --wibox.container.background(theme.volume.widget, theme.bg_focus),
-            wibox.container.background(pulse, theme.bg_focus),
+            wibox.container.background(volicon, theme.bg_focus),
+            wibox.container.background(theme.volume.widget, theme.bg_focus),
+            --wibox.container.background(pulse, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             --wibox.container.background(mailicon, theme.bg_focus),
             --wibox.container.background(theme.mail.widget, theme.bg_focus),
@@ -475,7 +472,7 @@ function theme.at_screen_connect(s)
             wibox.container.background(cpu.widget, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             arrl_dl,
-            wibox.container.background(tempicon, theme.bg_normal), 
+            wibox.container.background(tempicon, theme.bg_normal),
             wibox.container.background(temp.widget, theme.bg_normal),
             wibox.container.background(spr, theme.bg_normal),
             arrl_ld,
@@ -489,14 +486,20 @@ function theme.at_screen_connect(s)
             wibox.container.background(net.widget, theme.bg_normal),
             wibox.container.background(spr, theme.bg_normal),
             arrl_ld,
-            wibox.container.background(clock, theme.bg_focus),
+            wibox.container.background(vpnicon, theme.bg_focus),
+            wibox.container.background(vpn, theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             arrl_dl,
-            wibox.container.background(s.mylayoutbox, theme.bg_normal),
+            wibox.container.background(clock, theme.bg_normal),
+            wibox.container.background(spr, theme.bg_normal),
+            wibox.container.background(spr, theme.bg_normal),
+            arrl_ld,
+            wibox.container.background(s.mylayoutbox, theme.bg_focus),
         },
     }
 end
-
+--[[
 awful.util.table.join(
   -- Audio
   awful.key({ }, "XF86AudioRaiseVolume", pulse.volume_up),
@@ -507,5 +510,6 @@ awful.util.table.join(
   awful.key({"Shift"}, "XF86AudioLowerVolume", pulse.volume_down_mic),
   awful.key({ }, "XF86MicMute",  pulse.toggle_muted_mic)
 )
+]]--
 
 return theme
