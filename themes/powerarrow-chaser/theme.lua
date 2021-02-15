@@ -421,17 +421,66 @@ function theme.at_screen_connect(s)
     s.mywibox = awful.wibar({
       position = "top",
       screen = s,
-      height = dpi(20),
       height = dpi(18),
       bg = theme.bg_normal,
       fg = theme.fg_normal,
       --border_width = theme.border_width,
       --border_color = theme.border_focus,
-      --opacity = 0.8,
+      opacity = 0.7,
       shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, theme.corner_radius)
       end,
     })
+
+    awmodoro = require("awmodoro")
+
+    --pomodoro wibox
+    pomowibox = awful.wibox({
+        position = "bottom",
+        screen = s,
+        height=dpi(8),
+        opacity = 0.7,
+        shape = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, theme.corner_radius)
+        end}
+    )
+    pomowibox.visible = false
+    local screen = screen
+    pomodoro = awmodoro.new({
+    	minutes 			= 25,
+    	do_notify 			= true,
+    	active_bg_color 	= '#313131',
+    	paused_bg_color 	= '#7746D7',
+    	fg_color			= {type = "linear", from = {0,0}, to = {pomowibox.width, 0}, stops = {{0, "#AECF96"},{0.5, "#88A175"},{1, "#FF5656"}}},
+    	width 				= pomowibox.width,
+    	height 				= pomowibox.height,
+
+    	begin_callback = function()
+            for s in screen do
+                s.mywibox.visible = not s.mywibox.visible
+                if s.mybottomwibox then
+                    s.mybottomwibox.visible = not s.mybottomwibox.visible
+                end
+            end
+    		--for screens = 1, screen.count() do
+    		--	screens.mywibox.visible = false
+    		--end
+    		pomowibox.visible = true
+    	end,
+
+    	finish_callback = function()
+    		--for screens = 1, screen.count() do
+    		--	screens.mywibox.visible = true
+    		--end
+            for s in screen do
+                s.mywibox.visible = not s.mywibox.visible
+                if s.mybottomwibox then
+                    s.mybottomwibox.visible = not s.mybottomwibox.visible
+                end
+            end
+    		pomowibox.visible = false
+    	end})
+    pomowibox:set_widget(pomodoro)
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -501,7 +550,7 @@ function theme.at_screen_connect(s)
 end
 --[[
 awful.util.table.join(
-  -- Audio
+-- Audio
   awful.key({ }, "XF86AudioRaiseVolume", pulse.volume_up),
   awful.key({ }, "XF86AudioLowerVolume", pulse.volume_down),
   awful.key({ }, "XF86AudioMute",  pulse.toggle_muted),
