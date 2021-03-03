@@ -69,6 +69,7 @@ theme.widget_net                                = theme.dir .. "/icons/net.png"
 theme.widget_hdd                                = theme.dir .. "/icons/hdd.png"
 theme.widget_music                              = theme.dir .. "/icons/note.png"
 theme.widget_music_on                           = theme.dir .. "/icons/note_on.png"
+theme.widget_clock                              = theme.dir .. "/icons/clock.png"
 theme.widget_vol                                = theme.dir .. "/icons/vol.png"
 theme.widget_vol_low                            = theme.dir .. "/icons/vol_low.png"
 theme.widget_vol_no                             = theme.dir .. "/icons/vol_no.png"
@@ -134,9 +135,18 @@ local clock = awful.widget.watch(
         widget:set_markup(" " .. markup.font(theme.font, stdout))
     end
 )
-
+local calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar")
+local cw = calendar_widget({
+    theme = 'nord',
+    placement = 'top_right',
+    radius = theme.corner_radius
+})
+clock:connect_signal("button::press", 
+                           function(_, _, _, button)
+                             if button == 1 then cw.toggle() end
+end)
 -- Calendar
-theme.cal = lain.widget.cal({
+--[[theme.cal = lain.widget.cal({
     attach_to = { clock },
     notification_preset = {
         font = "Terminus 9",
@@ -146,7 +156,8 @@ theme.cal = lain.widget.cal({
           gears.shape.infobubble(cr, w, h, theme.corner_radius)
         end,
     },
-})
+  })--]]
+
 
 -- Mail IMAP check
 local mailicon = wibox.widget.imagebox(theme.widget_mail)
@@ -437,6 +448,17 @@ function theme.at_screen_connect(s)
       end,
     })
 
+    local github_activity_widget = require("awesome-wm-widgets.github-activity-widget.github-activity-widget")
+    ghw = github_activity_widget {
+      username = github_user_name
+    }
+    local github_contributions_widget = require("awesome-wm-widgets.github-contributions-widget.github-contributions-widget")
+    ghcw = github_contributions_widget {
+      username = github_user_name,
+      theme = 'classic',
+      color_of_empty_cells = theme.bg_systray
+    }
+    local calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar")
     awmodoro = require("awmodoro")
 
     --pomodoro wibox
@@ -546,15 +568,22 @@ function theme.at_screen_connect(s)
             wibox.container.background(spr, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             arrl_dl,
-            wibox.container.background(keyboardIcon, theme.bg_normal),
-            wibox.container.background(keyboardlayout, theme.bg_normal),
+            wibox.container.background(spr, theme.bg_normal),
+            wibox.container.background(ghw, theme.bg_normal),
+            wibox.container.background(ghcw, theme.bg_normal),
+            wibox.container.background(spr, theme.bg_normal),
             wibox.container.background(spr, theme.bg_normal),
             arrl_ld,
-            wibox.container.background(clock, theme.bg_focus),
-            wibox.container.background(spr, theme.bg_focus),
+            wibox.container.background(keyboardIcon, theme.bg_focus),
+            wibox.container.background(keyboardlayout, theme.bg_focus),
             wibox.container.background(spr, theme.bg_focus),
             arrl_dl,
-            wibox.container.background(s.mylayoutbox, theme.bg_normal),
+            wibox.container.background(clockicon, theme.bg_normal),
+            wibox.container.background(clock, theme.bg_normal),
+            wibox.container.background(spr, theme.bg_normal),
+            wibox.container.background(spr, theme.bg_normal),
+            arrl_ld,
+            wibox.container.background(s.mylayoutbox, theme.bg_focus),
         },
     }
 end
