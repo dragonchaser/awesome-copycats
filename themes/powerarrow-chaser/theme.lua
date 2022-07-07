@@ -135,6 +135,14 @@ local clock = awful.widget.watch(
         widget:set_markup(" " .. markup.font(theme.font, stdout))
     end
 )
+
+local countdown = awful.widget.watch(
+  "/home/chaser/bin/probezeit.sh", 1,
+  function(widget, stdout)
+    widget:set_markup(" " .. markup.font(theme.font, stdout))
+  end
+)
+
 local calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar")
 local cw = calendar_widget({
     theme = 'nord',
@@ -579,11 +587,16 @@ function theme.at_screen_connect(s)
             wibox.container.background(spr, theme.bg_focus),
             arrl_dl,
             wibox.container.background(clockicon, theme.bg_normal),
-            wibox.container.background(clock, theme.bg_normal),
+            wibox.container.background(countdown, theme.bg_normal),
             wibox.container.background(spr, theme.bg_normal),
             wibox.container.background(spr, theme.bg_normal),
             arrl_ld,
-            wibox.container.background(s.mylayoutbox, theme.bg_focus),
+            wibox.container.background(clockicon, theme.bg_focus),
+            wibox.container.background(clock, theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
+            wibox.container.background(spr, theme.bg_focus),
+            arrl_dl,
+            wibox.container.background(s.mylayoutbox, theme.bg_normal),
         },
     }
 end
