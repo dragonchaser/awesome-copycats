@@ -324,7 +324,7 @@ local net = lain.widget.net({
 -- vpn
 local vpnicon = wibox.widget.imagebox(theme.widget_net_wired)
 local vpn = awful.widget.watch(
-    "/home/chaser/bin/vpn_detect.sh", 5,
+    "/home/chaser/dotfiles/bin/vpn_detect.sh", 5,
     function(widget, stdout)
         widget:set_markup(" " .. markup.font(theme.font, stdout))
     end
